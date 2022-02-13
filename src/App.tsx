@@ -4,9 +4,9 @@ import "./styles.css";
 
 export default function App() {
   const [message, setMessage] = useState("Hello world");
-  const [securityToken, setSecurityToken] = useState("");
-  const [wsEndpoint, setWsEndpoint] = useState("ws://localhost:3000");
-  const [httpEndpoint, setHTTPEndpoint] = useState("http://localhost:3001");
+  const [securityToken, setSecurityToken] = useState("^^LOCAL-testing-123^^");
+  const [wsEndpoint, setWsEndpoint] = useState("ws://127.0.0.1:19501");
+  const [httpEndpoint, setHTTPEndpoint] = useState("http://127.0.0.1:13301");
   const [address, setAddress] = useState("");
 
   const getHeaders = (isPost = false) => {
