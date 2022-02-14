@@ -5,8 +5,9 @@ import "./styles.css";
 export default function App() {
   const [message, setMessage] = useState("Hello world");
   const [securityToken, setSecurityToken] = useState("^^LOCAL-testing-123^^");
-  const [wsEndpoint, setWsEndpoint] = useState("ws://127.0.0.1:19501");
+  const [wsEndpoint, setWsEndpoint] = useState("ws://127.0.0.1:19502"); //using node 2 instead of node 1
   const [httpEndpoint, setHTTPEndpoint] = useState("http://127.0.0.1:13301");
+  const [httpEndpoint2, setHTTPEndpoint2] = useState("http://127.0.0.1:13302"); //node 2
   const [address, setAddress] = useState("");
 
   const getHeaders = (isPost = false) => {
@@ -22,12 +23,13 @@ export default function App() {
   useEffect(() => {
     const loadAddress = async () => {
       const headers = getHeaders();
-      const account = await fetch(`${httpEndpoint}/api/v2/account/address`, {
+      const account = await fetch(`${httpEndpoint2}/api/v2/account/address`, {
         headers
       })
         .then((res) => res.json())
         .catch((err) => console.error(err));
       setAddress(account?.hoprAddress);
+      console.log("Address: " + account?.hoprAddress);
     };
     loadAddress();
   }, [securityToken, httpEndpoint]);

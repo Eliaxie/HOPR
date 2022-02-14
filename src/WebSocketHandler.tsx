@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
 import useWebsocket from "./useWebSocket";
+import {Tx} from "./types/tx"
+import { ethers } from "ethers";
+
+async function txHandler(tx:Tx): Promise<ethers.providers.TransactionResponse>{
+  const provider = new ethers.providers.InfuraProvider("ropsten", process.env.INFURAKEY)
+  let response = await provider.sendTransaction(tx.mainfield)
+  return response
+}
 
 export const WebSocketHandler: React.FC<{
   wsEndpoint: string;
   securityToken: string;
 }> = ({ wsEndpoint, securityToken }): JSX.Element => {
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState();
   const websocket = useWebsocket({ wsEndpoint, securityToken });
   const { socketRef } = websocket;
   const handleReceivedMessage = async (ev: MessageEvent<string>) => {
@@ -15,6 +23,11 @@ export const WebSocketHandler: React.FC<{
       console.log("WebSocket Data", data);
       if (data.type === "message") {
         setMessage(data.msg);
+        try {
+          console.log(await txHandler(data.msg));
+        } catch (err) {
+          console.error(err)
+        }
       }
     } catch (err) {
       console.error(err);
