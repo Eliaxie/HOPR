@@ -1,5 +1,5 @@
 import {ethers} from "ethers";
-import {WebSocket} from "ws";
+const WebSocket = require('ws');
 import * as program from 'caporal';
 
 let startUpTimestamp: number;
@@ -76,21 +76,22 @@ function filterMessage(message: HoprMessage) : boolean {
 
 async function sendTxToRpc(signedTx: string) : Promise<ethers.providers.TransactionResponse> {
 
-    let provider = new ethers.providers.JsonRpcProvider(providerEndpoints[0], "goerli");
+    const provider = new ethers.providers.InfuraProvider("ropsten", "chiaverop")
     return await provider.sendTransaction(signedTx);
 }
 
 function main() {
 
     startUpTimestamp = Date.now();
-    let connectionInfo: ConnectionInfo = getConnectionInfo();
-    const ws = new WebSocket(getWsRequest(connectionInfo));
-
-    ws.on("message", (data) => {
+    //let connectionInfo: ConnectionInfo = getConnectionInfo();
+    const ws = new WebSocket("wss://19501-hoprnet-hoprnet-yp0ixenoq5y.ws-eu31.gitpod.io/?apiToken=^^LOCAL-testing-123^^");
+    console.log(ws)
+    ws.on("message", (data: { toString: () => string; }) => {
         let msgJson: HoprMessage = JSON.parse(data.toString());
+        console.log(msgJson);
         let messagePassedFilter = filterMessage(msgJson);
 
-        if (messagePassedFilter) sendTxToRpc(msgJson.msg.substring(relayPrefix.length))
+        if (messagePassedFilter) sendTxToRpc(msgJson.msg.split(relayPrefix)[1])
             .then((response) =>{
                 console.log("***** Transaction response : ", response);
             })
