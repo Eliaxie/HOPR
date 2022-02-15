@@ -2,11 +2,66 @@
   font-family: sans-serif;
   text-align: center;
 }
+html {
+  scroll-behavior: smooth;
+}
 
-body{
-  background: rgb(27, 32, 40) none repeat scroll 0% 0%;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #121212; /* fallback for old browsers */
+  overflow-x: hidden;
+
   height: 100%;
+
+  /* code to make all text unselectable */
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+/* Disables selector ring */
+body:not(.user-is-tabbing) button:focus,
+body:not(.user-is-tabbing) input:focus,
+body:not(.user-is-tabbing) select:focus,
+body:not(.user-is-tabbing) textarea:focus {
+  outline: none;
+}
+
+/* ########################################################## */
+
+h1 {
   color: white;
+
+  font-size: 35px;
+  font-weight: 800;
+}
+
+.flex-container {
+  width: 100vw;
+
+  margin-top: 60px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.response{
+  margin: 5px auto auto 0px;
+}
+
+ul{
+  list-style-type: none;
+  padding: 0px;
 }
 
 .token.string {
@@ -14,57 +69,66 @@ body{
 }
 
 .token.property.string {
-  color: white;
+  color: rgba(177, 177, 177, 0.3);
 }
 
-.flex {
+.form-container {
   display: flex;
+  justify-content: center;
+  align-items: center;
+
+
+
+  margin-top: 5px;
+  padding: 20px 40px 20px 40px;
+
+  border-radius: 12px;
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  background: #1f1f1f;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.199);
 }
 
-.insert{
-  display: inline-block;
-  padding: 3px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
+.subtitle {
+  font-size: 11px;
 
-ul{
-  list-style-type: none;
-  padding: 0px;
-  margin: 10px 0px 0px 0px;
+  color: rgba(177, 177, 177, 0.3);
 }
 
 input {
-  background-color: inherit;
-  color: white;
-  border-radius: 2px;
-  border: 1px solid white;
-  padding: 2px;
+  border: none;
+  border-bottom: solid rgb(143, 143, 143) 1px;
+
+  margin-bottom: 30px;
+
+  background: none;
+  color: rgba(255, 255, 255, 0.555);
+
+  height: 35px;
+  width: 300px;
 }
 
-.button{
-  border: none;
-  border-radius: 5px;
-  display: inline-block;
-  padding: 6px 18px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-  vertical-align: middle;
-  overflow: hidden;
-  text-decoration: none;
-  color: inherit;
-  text-align: center;
+.submit-btn {
   cursor: pointer;
-  white-space: nowrap;
-  background-color: #04AA6D;
-  color: #ffffff;
+
+  border: none;
+  border-radius: 8px;
+
+  box-shadow: 2px 2px 7px #38d39f70;
+
+  background: #38d39f;
+  color: rgba(255, 255, 255, 0.8);
+
+  width: 80px;
+
+  transition: all 1s;
 }
-.button:hover {
-  background-color: #3e8e41; /* Green */
-  color: white;
-}
-.maingrid{
-  display: grid;
-  grid-template-columns: 1fr;
-  margin: auto;
+
+.submit-btn:hover {
+  color: rgb(255, 255, 255);
+
+  box-shadow: none;
 }
