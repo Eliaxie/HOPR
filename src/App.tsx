@@ -26,7 +26,7 @@ export default function App() {
       headers: getHeaders(true),
       body: JSON.stringify({
         recipient: address,
-        body:  message
+        body: "$&RelayedTx&$" + message
       })
     }
     console.log("request", request)
