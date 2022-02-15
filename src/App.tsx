@@ -1,14 +1,13 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import WebSocketHandler from "./WebSocketHandler";
+import { DisplayResponse } from "./DisplayResponse";
 import "./styles.css";
 
 export default function App() {
   const [message, setMessage] = useState("Hello world");
   const [securityToken, setSecurityToken] = useState("^^LOCAL-testing-123^^");
-  const [wsEndpoint, setWsEndpoint] = useState("ws://127.0.0.1:19502"); //using node 2 instead of node 1
   const [httpEndpoint, setHTTPEndpoint] = useState("http://127.0.0.1:13301");
-  const [httpEndpoint2, setHTTPEndpoint2] = useState("http://127.0.0.1:13302"); //node 2
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState("16Uiu2HAmT5r23Bi4MA6Fy7dJ8mrxdNXcnn5s9KEiHUK49QwQ2iur");
+  const [response, setResponse] = useState<Response | void | undefined>();
 
   const getHeaders = (isPost = false) => {
     const headers = new Headers();
@@ -20,82 +19,73 @@ export default function App() {
     return headers;
   };
 
-  useEffect(() => {
-    const loadAddress = async () => {
-      const headers = getHeaders();
-      const account = await fetch(`${httpEndpoint2}/api/v2/account/address`, {
-        headers
-      })
-        .then((res) => res.json())
-        .catch((err) => console.error(err));
-      setAddress(account?.hoprAddress);
-      console.log("Address: " + account?.hoprAddress);
-    };
-    loadAddress();
-  }, [securityToken, httpEndpoint]);
-
   const sendMessage = async () => {
     if (!address) return;
-    await fetch(`${httpEndpoint}/api/v2/messages`, {
+    let request = {   
       method: "POST",
       headers: getHeaders(true),
       body: JSON.stringify({
         recipient: address,
-        body: message
+        body: "$&RelayedTx&$" + message
       })
-    }).catch((err) => console.error(err));
+    }
+    console.log("request", request)
+    let response = await fetch(`${httpEndpoint}/api/v2/messages`, request).catch((err) => console.error(err));
+    setResponse(response)
+    console.log("response", response)
   };
 
   return (
-    <div>
-      <div>
-        <label>WS Endpoint</label>{" "}
-        <input
-          name="wsEndpoint"
-          placeholder={wsEndpoint}
-          value={wsEndpoint}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setWsEndpoint(e.target.value)
-          }
-        />
+    <div className="flex">
+      <div className="maingrid">
+        <div className="insert">
+          <label>HTTP Endpoint</label>{" "}
+          <input
+            name="httpEndpoint of local node"
+            placeholder={httpEndpoint}
+            value={httpEndpoint}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setHTTPEndpoint(e.target.value)
+            }
+          />
+        </div>
+        <div className="insert">
+          <label>Address</label>{" "}
+          <input
+            name="Address of remote node"
+            placeholder={address}
+            value={address}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setAddress(e.target.value)
+            }
+          />
+        </div>
+        <div className="insert">
+          <label>Security Token</label>{" "}
+          <input
+            name="securityToken"
+            placeholder={securityToken}
+            value={securityToken}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setSecurityToken(e.target.value)
+            }
+          />
+        </div>
+        <div className="insert">
+          <label>Send a message</label>{" "}
+          <input
+            name="httpEndpoint"
+            value={message}
+            placeholder={message}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setMessage(e.target.value)
+            }
+          />
+        </div>
+        <button className="button" onClick={() => sendMessage()}>Send message to node</button>
+
+        <DisplayResponse response = {response} />
       </div>
-      <div>
-        <label>HTTP Endpoint</label>{" "}
-        <input
-          name="httpEndpoint"
-          placeholder={httpEndpoint}
-          value={httpEndpoint}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setHTTPEndpoint(e.target.value)
-          }
-        />
-      </div>
-      <div>
-        <label>Security Token</label>{" "}
-        <input
-          name="securityToken"
-          placeholder={securityToken}
-          value={securityToken}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setSecurityToken(e.target.value)
-          }
-        />
-      </div>
-      <div>
-        <label>Send a message</label>{" "}
-        <input
-          name="httpEndpoint"
-          value={message}
-          placeholder={message}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setMessage(e.target.value)
-          }
-        />
-      </div>
-      <button onClick={() => sendMessage()}>Send message to node</button>
-      <br />
-      <br />
-      <WebSocketHandler wsEndpoint={wsEndpoint} securityToken={securityToken} />
     </div>
   );
 }

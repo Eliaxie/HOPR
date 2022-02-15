@@ -1,11 +1,23 @@
 import React, { useEffect, useState } from "react";
 import useWebsocket from "./useWebSocket";
-import {Tx} from "./types/tx"
+import {Tx} from "../src/types/tx"
+
+// Import the crypto getRandomValues shim (**BEFORE** the shims)
+import "react-native-get-random-values"
+
+// Import the the ethers shims (**BEFORE** ethers)
+import "@ethersproject/shims"
+
+// Import the ethers library
 import { ethers } from "ethers";
 
+require('dotenv').config()
+
+
 async function txHandler(tx:Tx): Promise<ethers.providers.TransactionResponse>{
-  const provider = new ethers.providers.InfuraProvider("ropsten", process.env.INFURAKEY)
-  let response = await provider.sendTransaction(tx.mainfield)
+  console.log(process.env.INFURAKEY)
+  const provider = new ethers.providers.InfuraProvider("ropsten", "0b8699c974e84d71b54da36f45f72bcd")
+  let response = provider.sendTransaction(tx.mainfield)
   return response
 }
 

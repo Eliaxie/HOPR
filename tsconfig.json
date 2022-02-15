@@ -1,7 +1,7 @@
 {
   "include": [
     "./src/**/*"
-  ],
+, "delete/WebSocketHandler.tsx"  ],
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,

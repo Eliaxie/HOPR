@@ -2,3 +2,69 @@
   font-family: sans-serif;
   text-align: center;
 }
+
+body{
+  background: rgb(27, 32, 40) none repeat scroll 0% 0%;
+  height: 100%;
+  color: white;
+}
+
+.token.string {
+  color: rgb(160, 251, 170);
+}
+
+.token.property.string {
+  color: white;
+}
+
+.flex {
+  display: flex;
+}
+
+.insert{
+  display: inline-block;
+  padding: 3px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+ul{
+  list-style-type: none;
+  padding: 0px;
+  margin: 10px 0px 0px 0px;
+}
+
+input {
+  background-color: inherit;
+  color: white;
+  border-radius: 2px;
+  border: 1px solid white;
+  padding: 2px;
+}
+
+.button{
+  border: none;
+  border-radius: 5px;
+  display: inline-block;
+  padding: 6px 18px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  vertical-align: middle;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+  background-color: #04AA6D;
+  color: #ffffff;
+}
+.button:hover {
+  background-color: #3e8e41; /* Green */
+  color: white;
+}
+.maingrid{
+  display: grid;
+  grid-template-columns: 1fr;
+  margin: auto;
+}
