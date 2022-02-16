@@ -21,11 +21,12 @@ type HoprMessage = {
     ts: string
 }
 
-function getConnectionInfo() : ConnectionInfo {
+function getConnectionInfo(): ConnectionInfo {
 
     program
         .version("0.0.1")
-        .description("hopr-relay-receiver : A cli application to receive ethereum transactions from HOPR nodes and forwarding them to an RPC ")
+        .name("hopr-relay-receiver")
+        .description("hopr-relay-receiver : A cli plugin for a HOPR node to receive ethereum transactions from other HOPR nodes and forward them to an RPC ")
         .argument("<token>"
             , "set the apiToken to connect to the HOPR node"
             , undefined
@@ -38,11 +39,17 @@ function getConnectionInfo() : ConnectionInfo {
             , "set the port to attach to"
             , undefined
             , undefined)
-        .action((args) => {
+        .action((args, options, logger) => {
+
+            logger.info("Starting relay-receiver with following params\n");
+            logger.info("Api Token : " + args.token);
+            logger.info("WS Endpoint : " + args.endpoint);
+            if (args.port !== undefined) logger.info("Port : " + args.port);
+
             apiToken = args.token;
             wsEndpoint = new URL(args.endpoint);
             port = args.port;
-    });
+        });
 
     program.parse(process.argv);
 
@@ -57,20 +64,20 @@ function getConnectionInfo() : ConnectionInfo {
  * Builder method : builds the full url to attach to the target node's ws messages endpoint
  * @param info ConnectionInfo holding all necessary data
  */
-function getWsURL(info: ConnectionInfo) : string {
+function getWsURL(info: ConnectionInfo): string {
     let fullUrl: string = info.endpoint.origin;
     if (port !== undefined) fullUrl = fullUrl.concat(":" + info.port);
     return fullUrl.concat("/api/v2/messages/websocket/?apiToken=" + info.token);
 
 }
 
-function filterMessage(message: HoprMessage) : boolean {
+function filterMessage(message: HoprMessage): boolean {
 
-    // 2 filter for type = "message"
+    // 1. filter for type = "message"
     if (message.type === "message") {
-        // 3 filter for correct prefix
+        // 2. filter for correct prefix
         if (message.msg.includes(config.txPrefix)) {
-            // 4 filter for timestamp
+            // 3. filter for timestamp
             let messageTimestamp = Date.parse(message.ts);
             if (messageTimestamp > startUpTimestamp) return true;
         }
@@ -82,7 +89,7 @@ function filterMessage(message: HoprMessage) : boolean {
  * Parses message of following structure : 'config.txPrefix'.0x[a-fA-F0-9]+.'config.networkPrefix'.[a-zA-Z]+
  * @param json HoprMessage struct for the message the hopr node received
  */
-function parseMessage(json: HoprMessage) : string[] {
+function parseMessage(json: HoprMessage): string[] {
 
     let signedTx = json.msg.split(config.txPrefix)[1];
     let chosenNetwork: string = "";
@@ -95,7 +102,9 @@ function parseMessage(json: HoprMessage) : string[] {
     return [chosenNetwork, signedTx];
 }
 
-async function sendTxToRpc(json: HoprMessage) : Promise<ethers.providers.TransactionResponse> {
+async function sendTxToRpc(json: HoprMessage): Promise<ethers.providers.TransactionResponse> {
+
+    console.log("Received a transaction from hoprnet : trying to submit it to RPC..");
 
     let [chosenNetwork, signedTx] = parseMessage(json);
     let provider: ethers.providers.JsonRpcProvider;
@@ -129,11 +138,11 @@ function main() {
 
     ws.on("message", (data: { toString: () => string; }) => {
         let msgJson: HoprMessage = JSON.parse(data.toString());
-        console.log(msgJson);
+        //console.log(msgJson);
         let messagePassedFilter = filterMessage(msgJson);
 
         if (messagePassedFilter) sendTxToRpc(msgJson)
-            .then((response) =>{
+            .then((response) => {
                 console.log("***** Transaction response : ", response);
             })
             .catch((error) => {console.log("#### Error: ", error)});

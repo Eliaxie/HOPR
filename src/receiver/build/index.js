@@ -39,7 +39,7 @@ exports.__esModule = true;
 var ethers_1 = require("ethers");
 var WebSocket = require('ws');
 var program = require("caporal");
-var config = require("./receiver-config.json");
+var config = require("./receiver-config.json"); //config file
 var startUpTimestamp;
 var wsEndpoint;
 var port;
@@ -47,11 +47,17 @@ var apiToken;
 function getConnectionInfo() {
     program
         .version("0.0.1")
-        .description("hopr-relay-receiver : A cli application to receive ethereum transactions from HOPR nodes and forwarding them to an RPC ")
+        .name("hopr-relay-receiver")
+        .description("hopr-relay-receiver : A cli plugin for a HOPR node to receive ethereum transactions from other HOPR nodes and forward them to an RPC ")
         .argument("<token>", "set the apiToken to connect to the HOPR node", undefined, "^^LOCAL-testing-123^^")
         .argument("<endpoint>", "set the endpoint of the HOPR node to attach to.", undefined, "ws://127.0.0.1")
         .argument("[port]", "set the port to attach to", undefined, undefined)
-        .action(function (args) {
+        .action(function (args, options, logger) {
+        logger.info("\nStarting relay-receiver with following params\n");
+        logger.info("Api Token : " + args.token);
+        logger.info("WS Endpoint : " + args.endpoint);
+        if (args.port !== undefined)
+            logger.info("Port : " + args.port);
         apiToken = args.token;
         wsEndpoint = new URL(args.endpoint);
         port = args.port;
@@ -63,6 +69,10 @@ function getConnectionInfo() {
         port: port
     };
 }
+/**
+ * Builder method : builds the full url to attach to the target node's ws messages endpoint
+ * @param info ConnectionInfo holding all necessary data
+ */
 function getWsURL(info) {
     var fullUrl = info.endpoint.origin;
     if (port !== undefined)
@@ -82,18 +92,28 @@ function filterMessage(message) {
     }
     return false;
 }
+/**
+ * Parses message of following structure : 'config.txPrefix'.0x[a-fA-F0-9]+.'config.networkPrefix'.[a-zA-Z]+
+ * @param json HoprMessage struct for the message the hopr node received
+ */
+function parseMessage(json) {
+    var signedTx = json.msg.split(config.txPrefix)[1];
+    var chosenNetwork = "";
+    if (signedTx.includes(config.networkPrefix)) {
+        chosenNetwork = signedTx.split(config.networkPrefix)[1];
+        signedTx = signedTx.split(config.networkPrefix)[0];
+    }
+    return [chosenNetwork, signedTx];
+}
 function sendTxToRpc(json) {
     return __awaiter(this, void 0, void 0, function () {
-        var signedTx, chosenNetwork, provider;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var _a, chosenNetwork, signedTx, provider;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    signedTx = json.msg.split(config.txPrefix)[1];
-                    chosenNetwork = "";
-                    if (signedTx.includes(config.networkPrefix)) {
-                        chosenNetwork = signedTx.split(config.networkPrefix)[1];
-                        signedTx = signedTx.split(config.networkPrefix)[0];
-                    }
+                    console.log("Received a transaction from hoprnet : trying to submit it to RPC..");
+                    _a = parseMessage(json), chosenNetwork = _a[0], signedTx = _a[1];
+                    //check if the selected network is accounted for in the config file
                     switch (chosenNetwork) {
                         case "goerli":
                         case "ropsten":
@@ -110,7 +130,7 @@ function sendTxToRpc(json) {
                             throw Error("No network was chosen for the received tx");
                     }
                     return [4 /*yield*/, provider.sendTransaction(signedTx)];
-                case 1: return [2 /*return*/, _a.sent()];
+                case 1: return [2 /*return*/, _b.sent()];
             }
         });
     });
@@ -121,13 +141,15 @@ function main() {
     var ws = new WebSocket(getWsURL(connectionInfo));
     ws.on("message", function (data) {
         var msgJson = JSON.parse(data.toString());
-        console.log(msgJson);
+        //console.log(msgJson);
         var messagePassedFilter = filterMessage(msgJson);
         if (messagePassedFilter)
             sendTxToRpc(msgJson)
                 .then(function (response) {
                 console.log("***** Transaction response : ", response);
-            })["catch"](function (error) { console.log("#### Error: ", error); });
+            })["catch"](function (error) {
+                console.log("#### Error: ", error);
+            });
     });
 }
 main();
