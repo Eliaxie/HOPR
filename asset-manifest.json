@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/HOPR/static/css/main.398ef190.chunk.css",
-    "main.js": "/HOPR/static/js/main.dad7161e.chunk.js",
-    "main.js.map": "/HOPR/static/js/main.dad7161e.chunk.js.map",
+    "main.css": "/HOPR/static/css/main.4276d9ed.chunk.css",
+    "main.js": "/HOPR/static/js/main.794ec31e.chunk.js",
+    "main.js.map": "/HOPR/static/js/main.794ec31e.chunk.js.map",
     "runtime-main.js": "/HOPR/static/js/runtime-main.7705b226.js",
     "runtime-main.js.map": "/HOPR/static/js/runtime-main.7705b226.js.map",
-    "static/js/2.6f552c20.chunk.js": "/HOPR/static/js/2.6f552c20.chunk.js",
-    "static/js/2.6f552c20.chunk.js.map": "/HOPR/static/js/2.6f552c20.chunk.js.map",
+    "static/js/2.df82dec3.chunk.js": "/HOPR/static/js/2.df82dec3.chunk.js",
+    "static/js/2.df82dec3.chunk.js.map": "/HOPR/static/js/2.df82dec3.chunk.js.map",
     "index.html": "/HOPR/index.html",
-    "static/css/main.398ef190.chunk.css.map": "/HOPR/static/css/main.398ef190.chunk.css.map",
-    "static/js/2.6f552c20.chunk.js.LICENSE.txt": "/HOPR/static/js/2.6f552c20.chunk.js.LICENSE.txt"
+    "static/css/main.4276d9ed.chunk.css.map": "/HOPR/static/css/main.4276d9ed.chunk.css.map",
+    "static/js/2.df82dec3.chunk.js.LICENSE.txt": "/HOPR/static/js/2.df82dec3.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.7705b226.js",
-    "static/js/2.6f552c20.chunk.js",
-    "static/css/main.398ef190.chunk.css",
-    "static/js/main.dad7161e.chunk.js"
+    "static/js/2.df82dec3.chunk.js",
+    "static/css/main.4276d9ed.chunk.css",
+    "static/js/main.794ec31e.chunk.js"
   ]
 }
