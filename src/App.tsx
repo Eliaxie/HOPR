@@ -41,9 +41,8 @@ export default function App() {
     }, 
   ]
 
-
   const [message, setMessage] = useState("");
-  const [securityToken, setSecurityToken] = useState("^^LOCAL-testing-123^^");
+  const [apiToken, setApiToken] = useState("^^LOCAL-testing-123^^");
   const [httpEndpoint, setHTTPEndpoint] = useState("");
   const [address, setAddress] = useState("");
   const [provider, setProvider] = useState(providers[0].value);
@@ -55,7 +54,7 @@ export default function App() {
       headers.set("Content-Type", "application/json");
       headers.set("Accept-Content", "application/json");
     }
-    headers.set("Authorization", "Basic " + btoa(securityToken));
+    headers.set("Authorization", "Basic " + btoa(apiToken));
     return headers;
   };
 
@@ -98,11 +97,11 @@ export default function App() {
                   }
                 />
               <br/>
-              <span className="subtitle">Remote Address:</span>
+              <span className="subtitle">Remote HOPR Address:</span>
               <br/>
               <input
                 name="Address"
-                placeholder="Remote address"
+                placeholder="Remote HOPR address"
                 value={address}
                 type="text"
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -110,15 +109,15 @@ export default function App() {
                 }
               />
               <br/>
-              <span className="subtitle">Security Token:</span>
+              <span className="subtitle">API Token:</span>
               <br/>
               <input
-                name="securityToken"
-                placeholder={securityToken}
-                value={securityToken}
+                name="apiToken"
+                placeholder={apiToken}
+                value={apiToken}
                 type="text"
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setSecurityToken(e.target.value)
+                  setApiToken(e.target.value)
                 }
               />
               <br/>

@@ -48,12 +48,12 @@ function getConnectionInfo() {
     program
         .version("0.0.1")
         .name("hopr-relay-receiver")
-        .description("hopr-relay-receiver : A cli plugin for a HOPR node to receive ethereum transactions from other HOPR nodes and forward them to an RPC ")
+        .description("hopr-relay-receiver : A cli plugin for a HOPR node to receive signed ethereum transactions from other HOPR nodes and forward them to an RPC")
         .argument("<token>", "set the apiToken to connect to the HOPR node", undefined, "^^LOCAL-testing-123^^")
         .argument("<endpoint>", "set the endpoint of the HOPR node to attach to.", undefined, "ws://127.0.0.1")
         .argument("[port]", "set the port to attach to", undefined, undefined)
         .action(function (args, options, logger) {
-        logger.info("\nStarting relay-receiver with following params\n");
+        logger.info("Starting relay-receiver with following params\n");
         logger.info("Api Token : " + args.token);
         logger.info("WS Endpoint : " + args.endpoint);
         if (args.port !== undefined)
@@ -80,11 +80,11 @@ function getWsURL(info) {
     return fullUrl.concat("/api/v2/messages/websocket/?apiToken=" + info.token);
 }
 function filterMessage(message) {
-    // 2 filter for type = "message"
+    // 1. filter for type = "message"
     if (message.type === "message") {
-        // 3 filter for correct prefix
+        // 2. filter for correct prefix
         if (message.msg.includes(config.txPrefix)) {
-            // 4 filter for timestamp
+            // 3. filter for timestamp
             var messageTimestamp = Date.parse(message.ts);
             if (messageTimestamp > startUpTimestamp)
                 return true;
@@ -122,7 +122,7 @@ function sendTxToRpc(json) {
                         case "mainnet":
                             provider = new ethers_1.ethers.providers.InfuraProvider(chosenNetwork, config.infuraKey);
                             break;
-                        case "fp-protect":
+                        case "fb-protect":
                         case "gnosis":
                             provider = new ethers_1.ethers.providers.JsonRpcProvider(config.endpoints[chosenNetwork]);
                             break;
@@ -147,9 +147,7 @@ function main() {
             sendTxToRpc(msgJson)
                 .then(function (response) {
                 console.log("***** Transaction response : ", response);
-            })["catch"](function (error) {
-                console.log("#### Error: ", error);
-            });
+            })["catch"](function (error) { console.log("#### Error: ", error); });
     });
 }
 main();

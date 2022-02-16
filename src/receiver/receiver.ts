@@ -26,7 +26,7 @@ function getConnectionInfo(): ConnectionInfo {
     program
         .version("0.0.1")
         .name("hopr-relay-receiver")
-        .description("hopr-relay-receiver : A cli plugin for a HOPR node to receive ethereum transactions from other HOPR nodes and forward them to an RPC ")
+        .description("hopr-relay-receiver : A cli plugin for a HOPR node to receive signed ethereum transactions from other HOPR nodes and forward them to an RPC")
         .argument("<token>"
             , "set the apiToken to connect to the HOPR node"
             , undefined
