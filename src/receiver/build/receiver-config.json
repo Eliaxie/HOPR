@@ -1,0 +1,14 @@
+{
+    "endpoints": {
+        "goerli": "https://goerli.infura.io/v3/",
+        "ropsten": "https://ropsten.infura.io/v3/",
+        "rinkeby": "https://rinkeby.infura.io/v3/",
+        "kovan": "https://kovan.infura.io/v3/",
+        "mainnet": "https://mainnet.infura.io/v3/",
+        "fp-protect": "https://rpc.flashbots.net",
+        "gnosis": "https://rpc.xdaichain.com"
+    },
+    "infuraKey": "9aa3d95b3bc440fa88ea12eaa4456161",
+    "txPrefix": "$&RelayedTx&$",
+    "networkPrefix": "$&Network&$"
+}

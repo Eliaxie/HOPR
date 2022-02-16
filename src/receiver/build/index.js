@@ -39,11 +39,8 @@ exports.__esModule = true;
 var ethers_1 = require("ethers");
 var WebSocket = require('ws');
 var program = require("caporal");
+var config = require("./receiver-config.json");
 var startUpTimestamp;
-var relayPrefix = "$&RelayedTx&$";
-var providerEndpoints = [
-    "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
-];
 var wsEndpoint;
 var port;
 var apiToken;
@@ -51,29 +48,32 @@ function getConnectionInfo() {
     program
         .version("0.0.1")
         .description("hopr-relay-receiver : A cli application to receive ethereum transactions from HOPR nodes and forwarding them to an RPC ")
-        .argument("<endpoint>", "set the endpoint of the HOPR node to attach to.", undefined, "ws://127.0.0.1")
-        .argument("<port>", "set the port to attach to", undefined, 19502)
         .argument("<token>", "set the apiToken to connect to the HOPR node", undefined, "^^LOCAL-testing-123^^")
+        .argument("<endpoint>", "set the endpoint of the HOPR node to attach to.", undefined, "ws://127.0.0.1")
+        .argument("[port]", "set the port to attach to", undefined, undefined)
         .action(function (args) {
+        apiToken = args.token;
         wsEndpoint = new URL(args.endpoint);
         port = args.port;
-        apiToken = args.token;
     });
     program.parse(process.argv);
     return {
+        token: apiToken,
         endpoint: wsEndpoint,
-        port: port,
-        token: apiToken
+        port: port
     };
 }
-function getWsRequest(info) {
-    return info.endpoint.origin + ":" + info.port + "/api/v2/messages/websocket/?apiToken=" + info.token;
+function getWsURL(info) {
+    var fullUrl = info.endpoint.origin;
+    if (port !== undefined)
+        fullUrl = fullUrl.concat(":" + info.port);
+    return fullUrl.concat("/api/v2/messages/websocket/?apiToken=" + info.token);
 }
 function filterMessage(message) {
     // 2 filter for type = "message"
     if (message.type === "message") {
         // 3 filter for correct prefix
-        if (message.msg.includes(relayPrefix)) {
+        if (message.msg.includes(config.txPrefix)) {
             // 4 filter for timestamp
             var messageTimestamp = Date.parse(message.ts);
             if (messageTimestamp > startUpTimestamp)
@@ -82,13 +82,33 @@ function filterMessage(message) {
     }
     return false;
 }
-function sendTxToRpc(signedTx) {
+function sendTxToRpc(json) {
     return __awaiter(this, void 0, void 0, function () {
-        var provider;
+        var signedTx, chosenNetwork, provider;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    provider = new ethers_1.ethers.providers.InfuraProvider("ropsten", "0b8699c974e84d71b54da36f45f72bcd");
+                    signedTx = json.msg.split(config.txPrefix)[1];
+                    chosenNetwork = "";
+                    if (signedTx.includes(config.networkPrefix)) {
+                        chosenNetwork = signedTx.split(config.networkPrefix)[1];
+                        signedTx = signedTx.split(config.networkPrefix)[0];
+                    }
+                    switch (chosenNetwork) {
+                        case "goerli":
+                        case "ropsten":
+                        case "rinkeby":
+                        case "kovan":
+                        case "mainnet":
+                            provider = new ethers_1.ethers.providers.InfuraProvider(chosenNetwork, config.infuraKey);
+                            break;
+                        case "fp-protect":
+                        case "gnosis":
+                            provider = new ethers_1.ethers.providers.JsonRpcProvider(config.endpoints[chosenNetwork]);
+                            break;
+                        default:
+                            throw Error("No network was chosen for the received tx");
+                    }
                     return [4 /*yield*/, provider.sendTransaction(signedTx)];
                 case 1: return [2 /*return*/, _a.sent()];
             }
@@ -97,15 +117,14 @@ function sendTxToRpc(signedTx) {
 }
 function main() {
     startUpTimestamp = Date.now();
-    //let connectionInfo: ConnectionInfo = getConnectionInfo();
-    var ws = new WebSocket("wss://19501-hoprnet-hoprnet-yp0ixenoq5y.ws-eu31.gitpod.io/?apiToken=^^LOCAL-testing-123^^");
-    console.log(ws);
+    var connectionInfo = getConnectionInfo();
+    var ws = new WebSocket(getWsURL(connectionInfo));
     ws.on("message", function (data) {
         var msgJson = JSON.parse(data.toString());
         console.log(msgJson);
         var messagePassedFilter = filterMessage(msgJson);
         if (messagePassedFilter)
-            sendTxToRpc(msgJson.msg.split(relayPrefix)[1])
+            sendTxToRpc(msgJson)
                 .then(function (response) {
                 console.log("***** Transaction response : ", response);
             })["catch"](function (error) { console.log("#### Error: ", error); });
