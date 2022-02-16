@@ -147,6 +147,7 @@ function main() {
             sendTxToRpc(msgJson)
                 .then(function (response) {
                 console.log("***** Transaction response : ", response);
+                response.wait(1).then(function (r) { return console.log("The tx has been confirmed! TxHash : " + r.transactionHash); });
             })["catch"](function (error) { console.log("#### Error: ", error); });
     });
 }

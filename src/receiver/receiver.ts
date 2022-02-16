@@ -143,7 +143,8 @@ function main() {
 
         if (messagePassedFilter) sendTxToRpc(msgJson)
             .then((response) => {
-                console.log("***** Transaction response : ", response);
+                console.log("***** Transaction response : ", response)
+                response.wait(1).then(r => console.log("The tx has been confirmed! TxHash : " + r.transactionHash));
             })
             .catch((error) => {console.log("#### Error: ", error)});
     });
