@@ -118,7 +118,7 @@ async function sendTxToRpc(json: HoprMessage): Promise<ethers.providers.Transact
         case "mainnet":
             provider = new ethers.providers.InfuraProvider(chosenNetwork, config.infuraKey);
             break;
-        case "fp-protect" :
+        case "fb-protect" :
         case "gnosis":
             provider = new ethers.providers.JsonRpcProvider(config.endpoints[chosenNetwork]);
             break;
