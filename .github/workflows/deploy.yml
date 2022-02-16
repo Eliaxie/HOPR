@@ -1,24 +1,57 @@
-name: Deploy
+name: Build & deploy
+
 on:
   push:
-    paths:
-      - .github/workflows/deploy.yml
-      - src/**
-      - public/**
     branches:
-      - "main"
-  workflow_dispatch:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  gh-pages:
-    name: Deploy to GitHub Pages
-    runs-on: ubuntu-20.04
-
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - run: npm ci --ignore-scripts
-      - run: npm run deploy -- -r https://${DEPLOYMENT_PAT}@github.com/thetolproject/thetolproject.github.io.git -u "${GITHUB_ACTOR} <${GITHUB_ACTOR}@users.noreply.github.com>"
-        
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - name: Install Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 13.x
+    
+    - name: Install NPM packages
+      run: npm ci
+    
+    - name: Build project
+      run: npm run build
+    
+    - name: Run tests
+      run: npm run test
+
+    - name: Upload production-ready build files
+      uses: actions/upload-artifact@v2
+      with:
+        name: production-files
+        path: ./build
+  
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: production-files
+        path: ./build
+
+    - name: Deploy to gh-pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build
