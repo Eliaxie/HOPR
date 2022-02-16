@@ -6,7 +6,7 @@ The system is composed of :
 | Component | Description |
 | --------- | ----------- |
 | React app | Responsible for serving a front-end where users may submit their signed transactions.|
-| Node.js script | A hopr node message listeners that filters incoming messages and if it finds a transaction, it forwards it to an RPC endpoint. |
+| Node.js script | A hopr node plugin that acts as a message listener, filters incoming messages and if it finds a transaction, it forwards it to an RPC endpoint. |
 
 ## Installing the components
 
