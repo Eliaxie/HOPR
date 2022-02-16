@@ -1,12 +1,52 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { DisplayResponse } from "./DisplayResponse";
 import "./styles.css";
+import * as config from "./receiver/receiver-config.json"
+
+export type provider = {
+  name: string,
+  value: string
+}
 
 export default function App() {
-  const [message, setMessage] = useState("Hello world");
+
+  const providers: provider[] = [
+    {
+      name: "goerli",
+      value: "goerli"
+    }, 
+    {
+      name: "ropsten",
+      value: "ropsten"
+    },
+    {
+      name: "rinkeby",
+      value: "rinkeby"
+    }, 
+    {
+      name: "kovan",
+      value: "kovan"
+    }, 
+    {
+      name: "mainnet",
+      value: "mainnet"
+    }, 
+    {
+      name: "fp-protect",
+      value: "fp-protect"
+    }, 
+    {
+      name: "gnosis",
+      value: "gnosis"
+    }, 
+  ]
+
+
+  const [message, setMessage] = useState("");
   const [securityToken, setSecurityToken] = useState("^^LOCAL-testing-123^^");
-  const [httpEndpoint, setHTTPEndpoint] = useState("http://127.0.0.1:13301");
-  const [address, setAddress] = useState("16Uiu2HAmEr9FRBxgpnmvubnH56hgfLZmQi4BMn8kM8EBxusa9X36");
+  const [httpEndpoint, setHTTPEndpoint] = useState("");
+  const [address, setAddress] = useState("");
+  const [provider, setProvider] = useState(providers[0].value);
   const [response, setResponse] = useState<Response | void | undefined>();
 
   const getHeaders = (isPost = false) => {
@@ -26,7 +66,7 @@ export default function App() {
       headers: getHeaders(true),
       body: JSON.stringify({
         recipient: address,
-        body: "$&RelayedTx&$" + message
+        body: config.txPrefix + message + config.networkPrefix + provider
       })
     }
     console.log("request", request)
@@ -49,8 +89,8 @@ export default function App() {
               <span className="subtitle">Local HTTP Endpoint:</span>
               <br/>
               <input
-                  name="httpEndpoint of local node"
-                  placeholder={httpEndpoint}
+                  name="HTTPendpoint"
+                  placeholder="Local node address"
                   type="text"
                   value={httpEndpoint}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -61,8 +101,8 @@ export default function App() {
               <span className="subtitle">Remote Address:</span>
               <br/>
               <input
-                name="Address of remote node"
-                placeholder={address}
+                name="Address"
+                placeholder="Remote address"
                 value={address}
                 type="text"
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -85,14 +125,24 @@ export default function App() {
               <span className="subtitle">Transaction:</span>
               <br/>
               <input
-                name="httpEndpoint"
+                name="Transaction"
                 value={message}
-                placeholder={message}
+                placeholder="Transaction to send"
                 type="text"
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setMessage(e.target.value)
                 }
               />
+              <br/>
+              <span className="subtitle">Provider</span>
+              <br/>
+              <select
+                value={provider}
+                onChange={e => setProvider(e.target.value)}>
+                  {providers.map(o => (
+                    <option key={o.value} value={o.value}>{o.name}</option>
+                ))}
+              </select>
               <br/><br/>
               <input value="Send" type="button" className="submit-btn" onClick={() => sendMessage()} />
             </form>

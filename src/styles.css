@@ -53,6 +53,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-bottom: 20px;
 }
 
 .response{
@@ -109,6 +110,28 @@ input {
 
   height: 35px;
   width: 300px;
+}
+
+select {
+  border: none;
+  border-bottom: solid rgb(143, 143, 143) 1px;
+
+  margin-bottom: 30px;
+
+  background: none;
+  color: rgba(255, 255, 255, 0.555);
+
+  height: 35px;
+  width: 300px;
+  background-color: #1f1f1f;
+
+}
+
+option {
+  border: none;
+  background-color: #1f1f1f;
+  color: rgba(255, 255, 255, 0.555);
+  outline-color: #1f1f1f;
 }
 
 .submit-btn {
