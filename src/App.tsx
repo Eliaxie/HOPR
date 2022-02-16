@@ -32,8 +32,8 @@ export default function App() {
       value: "mainnet"
     }, 
     {
-      name: "fp-protect",
-      value: "fp-protect"
+      name: "fb-protect",
+      value: "fb-protect"
     }, 
     {
       name: "gnosis",
