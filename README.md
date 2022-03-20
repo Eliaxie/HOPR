@@ -31,6 +31,10 @@ Examples of correct format for the arguments may be:
 - `node ./src/receiver/build/receiver.js myApiToken ws://destination.node.url 12345`
 - `node ./src/receiver/build/receiver.js myApiToken ws://destination.node.url`
 
+## Video Demo
+
+Find [here](https://1drv.ms/v/s!AkIslNN5poFl8zbDz31Qk4si0WDW) a quick demo of how the relay is to be used
+
 ## Contributors
 - [eliaxie](https://github.com/Eliaxie)
 - [lmanini](https://github.com/lmanini)
